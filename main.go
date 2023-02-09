@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -15,15 +17,7 @@ import (
 	"github.com/docker/docker/client"
 )
 
-var baseStyle = lipgloss.NewStyle().
-	BorderStyle(lipgloss.NormalBorder()).
-	BorderForeground(lipgloss.Color("12")).
-	Foreground(lipgloss.Color("#7accf8")).
-	// PaddingTop(1).
-    // PaddingBottom(1).
-    PaddingLeft(1).
-    PaddingRight(1)
-	// Width(90)
+
 
 var rows_images []table.Row
 var rows_containers []table.Row
@@ -47,12 +41,14 @@ var columns_containers = []table.Column{
 type model struct {
 	table table.Model
 	textinput textinput.Model
-	err       error		
+	err       error
 }
 
 // Init
 func (m model) Init() tea.Cmd { 
+	// return tea.Batch()
 	return tea.Batch(tea.EnterAltScreen)
+
 }
 
 // Update
@@ -90,8 +86,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// view
 func (m model) View() string {
-	return baseStyle.Render(m.textinput.View()) + "\n" + baseStyle.Render(m.table.View()) + "\n"
+	height, width := getWindowSize()
+	tableStyle := createStyle(height/5, width-2)
+	inputStyle := createStyle(1, width-2)
+	return inputStyle.Render(m.textinput.View()) + "\n" + tableStyle.Render(m.table.View()) + "\n"
 }
 
 func main() {
@@ -107,7 +107,7 @@ func main() {
 	}
 	for _, container := range containers {
 		port :=  strconv.FormatUint(uint64(container.Ports[0].PrivatePort), 10) + "/" + container.Ports[0].Type
-		row := []string{container.ID[:12], container.Image, container.Command, string(container.Created), container.Status, port, strings.Trim(container.Names[0], "/")	}
+		row := []string{container.ID[:12], container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")	}
 		rows_containers = append(rows_containers, row)	
 	}
 
@@ -136,9 +136,9 @@ func main() {
 
 	// add table to model
 	m := model{t, ti, nil}
-
 	// launch
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+	p := tea.NewProgram(m)
+	if _, err := p.Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
@@ -149,7 +149,6 @@ func createTable(rows []table.Row, columns []table.Column) table.Model {
 		table.WithRows(rows),
 		table.WithColumns(columns),
 		table.WithFocused(true),
-		// table.WithHeight(7),
 	)
 	s := table.DefaultStyles()
 	s.Header = s.Header.
@@ -162,4 +161,33 @@ func createTable(rows []table.Row, columns []table.Column) table.Model {
 	t.SetStyles(s)
 	
 	return t
+}
+
+func getWindowSize() (int, int) {
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	out, err := cmd.Output()
+	output := string(out)
+	dimensions := strings.Split(strings.TrimSpace(output), " ")
+	height, err := strconv.Atoi(dimensions[0])
+	width, err := strconv.Atoi(dimensions[1])
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return height, width
+}
+
+func createStyle(height, width int) lipgloss.Style {
+	return lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	BorderForeground(lipgloss.Color("12")).
+	Foreground(lipgloss.Color("#7accf8")).
+	// PaddingTop(1).
+    // PaddingBottom(1).
+    PaddingLeft(1).
+    PaddingRight(1).
+	Width(width).
+	Height(height)
 }
