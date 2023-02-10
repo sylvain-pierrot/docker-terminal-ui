@@ -34,7 +34,7 @@ func TableContainers() table.Model {
 
 	// containers
 	option := types.ContainerListOptions{}
-	// option.All = true
+	// option.All = true	
 	containers, err := cli.ContainerList(context.Background(), option)
 	if err != nil {
 		panic(err)

@@ -49,6 +49,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c":
 				return m, tea.Quit
 			case "esc":
+				m.input.Reset()
 				m.search = false
 				m.input.Blur()
 				m.tables[m.cursor].Focus()
