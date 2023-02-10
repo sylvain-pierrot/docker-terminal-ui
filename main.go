@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"main/custom"
 	"main/docker"
+	"main/utils"
 	"os"
-	"os/exec"
 	"strconv"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -71,7 +69,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // view
 func (m model) View() string {
-	height, width := getWindowSize()
+	height, width := utils.GetWindowSize()
 
 	widthTotalMargin := 2
 	heightTotalMargin := 4
@@ -89,23 +87,19 @@ func (m model) View() string {
 }
 
 func main() {
+	// client docker
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		panic(err)
 	}
 
-	// create table
-	t := custom.CreateTable(docker.ListImages(cli))
-
-	// create input
-	ti := textinput.New()
-	// ti.Placeholder = "Pikachu"
-	// ti.Focus()
-	ti.CharLimit = 156
-	ti.Width = 20
+	// create
+	table := custom.CreateTable(docker.ListImages(cli))
+	input := custom.CreateInput()
 
 	// add table to model
-	m := model{t, ti, nil}
+	m := model{table, input, nil}
+
 	// launch
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
@@ -114,19 +108,5 @@ func main() {
 	}
 }
 
-func getWindowSize() (int, int) {
-	cmd := exec.Command("stty", "size")
-	cmd.Stdin = os.Stdin
-	out, err := cmd.Output()
-	output := string(out)
-	dimensions := strings.Split(strings.TrimSpace(output), " ")
-	height, err := strconv.Atoi(dimensions[0])
-	width, err := strconv.Atoi(dimensions[1])
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return height, width
-}
 
