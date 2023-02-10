@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"main/custom"
 	"os"
 	"os/exec"
 	"strconv"
@@ -66,9 +67,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "ctrl+a":
-			m.table = createTable(rows_containers, columns_containers)
+			m.table = custom.CreateTable(rows_containers, columns_containers)
 		case "ctrl+e":
-			m.table = createTable(rows_images, columns_images)
+			m.table = custom.CreateTable(rows_images, columns_images)
 		case ":":
 			m.textinput.Focus()
 			switch msg.Type {
@@ -89,9 +90,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // view
 func (m model) View() string {
 	height, width := getWindowSize()
-	tableStyle := createStyle(height/5, width-2)
-	inputStyle := createStyle(1, width-2)
-	return inputStyle.Render(m.textinput.View()) + "\n" + tableStyle.Render(m.table.View()) + "\n"
+
+	widthTotalMargin := 2
+	heightTotalMargin := 4
+
+	inputStyle := createStyle(1, width-widthTotalMargin, "#ffa500")
+	tableStyle := createStyle(height-inputStyle.GetHeight()-heightTotalMargin, width-widthTotalMargin, "12")
+
+	input := inputStyle.Render(m.textinput.View())
+	table := tableStyle.Render(m.table.View())
+	
+	number := tableStyle.GetHeight()
+
+	return lipgloss.PlaceVertical(height, lipgloss.Top, lipgloss.JoinVertical(lipgloss.Left, input, table) + "\n" + fmt.Sprint(height) + " " + strconv.Itoa(number) )
+	
 }
 
 func main() {
@@ -125,7 +137,7 @@ func main() {
 	}
 
 	// create table
-	t := createTable(rows_images, columns_images)
+	t := custom.CreateTable(rows_images, columns_images)
 
 	// create input
 	ti := textinput.New()
@@ -144,25 +156,6 @@ func main() {
 	}
 }
 
-func createTable(rows []table.Row, columns []table.Column) table.Model {
-	t := table.New(
-		table.WithRows(rows),
-		table.WithColumns(columns),
-		table.WithFocused(true),
-	)
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		Foreground(lipgloss.Color("#FFFFFF")).
-		Bold(false)
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000000")).
-		Background(lipgloss.Color("#87cefa")).
-		Bold(true)
-	t.SetStyles(s)
-	
-	return t
-}
-
 func getWindowSize() (int, int) {
 	cmd := exec.Command("stty", "size")
 	cmd.Stdin = os.Stdin
@@ -179,15 +172,20 @@ func getWindowSize() (int, int) {
 	return height, width
 }
 
-func createStyle(height, width int) lipgloss.Style {
-	return lipgloss.NewStyle().
+func createStyle(height, width int, color string) lipgloss.Style {
+	style := lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
-	BorderForeground(lipgloss.Color("12")).
+	BorderForeground(lipgloss.Color(color)).
 	Foreground(lipgloss.Color("#7accf8")).
 	// PaddingTop(1).
     // PaddingBottom(1).
     PaddingLeft(1).
     PaddingRight(1).
-	Width(width).
-	Height(height)
+	Width(width)
+
+	if (height > 0) {
+		style.Height(height)
+	}
+
+	return style
 }
