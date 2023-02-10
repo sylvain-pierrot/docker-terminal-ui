@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"main/custom"
 	"strconv"
 	"strings"
 
@@ -10,7 +11,16 @@ import (
 	"github.com/docker/docker/client"
 )
 
-func ListContainers(cli *client.Client) (rows []table.Row, columns []table.Column) {
+var cli *client.Client
+
+func Init(client *client.Client) {
+	cli = client
+}
+
+func TableContainers() table.Model {
+	var rows []table.Row
+	var columns []table.Column
+
 	columns = []table.Column{
 		{Title: "CONTAINER ID", Width: 15},
 		{Title: "IMAGE", Width: 10},
@@ -32,10 +42,13 @@ func ListContainers(cli *client.Client) (rows []table.Row, columns []table.Colum
 		rows = append(rows, row)	
 	}
 
-	return
+	return custom.CreateTable(rows, columns)
 }
 
-func ListImages(cli *client.Client) (rows []table.Row, columns []table.Column) {
+func TableImages() table.Model {
+	var rows []table.Row
+	var columns []table.Column
+
 	columns = []table.Column{
 	{Title: "REPOSITORY", Width: 10},
 	{Title: "TAG", Width: 10},
@@ -55,5 +68,5 @@ func ListImages(cli *client.Client) (rows []table.Row, columns []table.Column) {
 		rows = append(rows, row)
 	}
 
-	return
+	return custom.CreateTable(rows, columns)
 }

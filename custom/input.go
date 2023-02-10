@@ -4,7 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 )
 
-func CreateInput() (input textinput.Model) {
+func SearchBar() (input textinput.Model) {
 	input = textinput.New()
 	// ti.Placeholder = "Pikachu"
 	// ti.Focus()
