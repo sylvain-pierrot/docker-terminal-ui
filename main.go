@@ -91,7 +91,7 @@ func (m model) View() string {
 
 	height, width := utils.GetWindowSize()
 
-	descHeight := 8
+	descHeight := 15
 	inputHeight := 1
 	var heightToRemove int
 	if (m.search) {
@@ -112,7 +112,7 @@ func (m model) View() string {
 
 	input := inputStyle.Render(m.input.View())
 	table := tableStyle.Render(m.tables[m.cursor].View())
-	desc := custom.Lists()
+	desc := docker.Lists()
 
 	var result string
 	if (m.search) {
