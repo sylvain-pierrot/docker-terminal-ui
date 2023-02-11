@@ -112,13 +112,22 @@ func (m model) View() string {
 	if (tableHeight < 1) {
 		tableHeight = 0
 	}
-	inputStyle := custom.CreateStyle(width, inputHeight, "#ffa500")
-	tableStyle := custom.CreateStyle(width, tableHeight, "12")
+	
 
 	table := m.tables[m.cursor]
+	currentWidth := table.Width() + 18
+
+	if (currentWidth <= width) {
+		currentWidth = width
+	}
+
+	inputStyle := custom.CreateStyle(width, inputHeight, "#ffa500")
+	tableStyle := custom.CreateStyle(currentWidth, tableHeight, "12")
+
+	table.SetWidth(currentWidth)
 	table.SetHeight(tableHeight)
-	table.SetWidth(90)
-	// table.SetWidth(width-widthToRemove)
+
+	
 
 	input_string := inputStyle.Render(m.input.View())
 	table_string := tableStyle.Render(table.View())

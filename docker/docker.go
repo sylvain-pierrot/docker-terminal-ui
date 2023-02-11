@@ -44,7 +44,7 @@ func TableContainers() table.Model {
 		} else {
 			port = "-"
 		}
-		row := []string{container.ID[:12], container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")	}
+		row := []string{container.ID[:12], container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")}
 		rows = append(rows, row)	
 	}
 

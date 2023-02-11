@@ -6,12 +6,17 @@ import (
 )
 
 func CreateTable(rows []table.Row, columns []table.Column) table.Model {
+	width := 0
+	for i := 0; i < len(columns); i++ {
+		width += columns[i].Width
+	}
+	
 	t := table.New(
 		table.WithRows(rows),
 		table.WithColumns(columns),
 		table.WithFocused(true),
 		table.WithHeight(5),
-		// table.WithWidth(90),
+		table.WithWidth(width),
 	)
 	s := table.DefaultStyles()
 	s.Header = s.Header.
