@@ -100,32 +100,35 @@ func (m model) View() string {
 
 	descHeight := 15
 	inputHeight := 1
-	var heightToRemove int
+	var tableHeight int
+
 	if (m.search) {
-		heightToRemove = 2 + 2 + inputHeight + descHeight
+		tableHeight = height - inputHeight - descHeight - 4
 	} else {
-		heightToRemove = 2 + descHeight
+		tableHeight = height - descHeight - 2
 	}
-	widthToRemove := 2
+	width -= 2
 
-	inputStyle := custom.CreateStyle(width-widthToRemove, inputHeight, "#ffa500")
-	tableStyle := custom.CreateStyle(width-widthToRemove, height-heightToRemove, "12")
+	if (tableHeight < 1) {
+		tableHeight = 0
+	}
+	inputStyle := custom.CreateStyle(width, inputHeight, "#ffa500")
+	tableStyle := custom.CreateStyle(width, tableHeight, "12")
 
-	// fmt.Println(width)
-	// option := table.WithWidth(width)
-	// m.table.SetWidth(width-widthToRemove)
-	// (&m.table).UpdateViewport()
-	// m.table.UpdateViewport()
+	table := m.tables[m.cursor]
+	table.SetHeight(tableHeight)
+	table.SetWidth(90)
+	// table.SetWidth(width-widthToRemove)
 
-	input := inputStyle.Render(m.input.View())
-	table := tableStyle.Render(m.tables[m.cursor].View())
-	desc := docker.Lists()
+	input_string := inputStyle.Render(m.input.View())
+	table_string := tableStyle.Render(table.View())
+	desc_string := docker.Lists()
 
 	var result string
 	if (m.search) {
-		result = lipgloss.JoinVertical(lipgloss.Left, desc, input, table)
+		result = lipgloss.JoinVertical(lipgloss.Left, desc_string, input_string, table_string)
 	} else {
-		result = lipgloss.JoinVertical(lipgloss.Left, desc, table)
+		result = lipgloss.JoinVertical(lipgloss.Left, desc_string, table_string)
 	}
 
 	return lipgloss.PlaceVertical(height, lipgloss.Top, result)
