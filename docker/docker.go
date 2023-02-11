@@ -33,14 +33,17 @@ func TableContainers() table.Model {
 	}
 
 	// containers
-	option := types.ContainerListOptions{}
-	// option.All = true	
-	containers, err := cli.ContainerList(context.Background(), option)
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
 		panic(err)
 	}
 	for _, container := range containers {
-		port :=  strconv.FormatUint(uint64(container.Ports[0].PrivatePort), 10) + "/" + container.Ports[0].Type
+		var port string
+		if len(container.Ports) > 0 {
+			port = strconv.FormatUint(uint64(container.Ports[0].PrivatePort), 10) + "/" + container.Ports[0].Type
+		} else {
+			port = "-"
+		}
 		row := []string{container.ID[:12], container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")	}
 		rows = append(rows, row)	
 	}
