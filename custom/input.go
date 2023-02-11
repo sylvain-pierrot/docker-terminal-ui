@@ -7,7 +7,7 @@ import (
 func SearchBar() (input textinput.Model) {
 	input = textinput.New()
 	input.Prompt ="🐨>"
-	// input.Placeholder = "🐧"
+	input.Placeholder = "mescouilles"
 	// ti.Focus()
 	input.CharLimit = 156
 	input.Width = 20

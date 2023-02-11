@@ -15,19 +15,20 @@ import (
 )
 
 type model struct {
-	cursor int
+	cursor string
 	input textinput.Model
-	tables []table.Model
-    // selected map[int]struct{}
+	// tables []table.Model
+    tables map[string]table.Model
 	search bool
 	err error
 }
 
 func initialModel() model {
 	return model{
-		cursor: 0,
+		cursor: "container",
 		input: custom.SearchBar(),
-		tables:  []table.Model{docker.TableContainers(), docker.TableImages()},
+		// tables:  []table.Model{docker.TableContainers(), docker.TableImages()},
+		tables: map[string]table.Model{"container": docker.TableContainers(), "image": docker.TableImages()},
 		// selected: make(map[int]struct{}),
 		search: false,
 		err: nil,
@@ -52,7 +53,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.input.Reset()
 				m.search = false
 				m.input.Blur()
-				m.tables[m.cursor].Focus()
+				// m.tables[m.cursor].Focus()
+				fmt.Println(m.tables[m.cursor])
 			default:
 				m.input, cmd = m.input.Update(msg)
 			}
@@ -61,12 +63,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c":
 				return m, tea.Quit
 			case "ctrl+a":
-				m.cursor = 0
+				m.cursor = "container"
 			case "ctrl+e":
-				m.cursor = 1
+				m.cursor = "image"
 			case ":":
 				m.search = true
-				m.tables[m.cursor].Blur()
+				// m.tables[m.cursor].Blur()
 				m.input.Focus()
 				// switch msg.Type {
 				// case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:

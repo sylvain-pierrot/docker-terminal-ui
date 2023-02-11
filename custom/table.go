@@ -11,7 +11,7 @@ func CreateTable(rows []table.Row, columns []table.Column) table.Model {
 		table.WithColumns(columns),
 		table.WithFocused(true),
 		table.WithHeight(5),
-		// table.WithWidth(5),
+		// table.WithWidth(90),
 	)
 	s := table.DefaultStyles()
 	s.Header = s.Header.
