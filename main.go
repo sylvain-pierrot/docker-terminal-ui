@@ -53,8 +53,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.input.Reset()
 				m.search = false
 				m.input.Blur()
-				// m.tables[m.cursor].Focus()
-				fmt.Println(m.tables[m.cursor])
+				table := m.tables[m.cursor]
 			default:
 				m.input, cmd = m.input.Update(msg)
 			}
@@ -68,7 +67,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = "image"
 			case ":":
 				m.search = true
-				// m.tables[m.cursor].Blur()
+				m.tables[m.cursor].Blur()
 				m.input.Focus()
 				// switch msg.Type {
 				// case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
