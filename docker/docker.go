@@ -60,7 +60,7 @@ func TableImages() table.Model {
 	{Title: "TAG", Width: 10},
 	{Title: "IMAGE ID", Width: 20},
 	{Title: "SIZE", Width: 10},
-}
+	}
 
 	// images
 	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})

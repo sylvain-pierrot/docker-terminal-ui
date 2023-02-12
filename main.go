@@ -6,6 +6,7 @@ import (
 	"main/docker"
 	"main/utils"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -42,10 +43,19 @@ func (m model) Init() tea.Cmd {
 
 // Update
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	searchItems := []string{"containers", "images", "volumes"}
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+
 		if m.search {
+				
+			for _, item := range searchItems {
+				if strings.HasPrefix(item, m.input.Value()) {
+					m.input.Placeholder = item
+					break
+				}
+			}
 			switch msg.String() {
 			case "ctrl+c":
 				return m, tea.Quit
@@ -56,6 +66,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// m.tables[m.cursor].Focus()
 				// table.Focus()
 			case "enter":
+
 				if _, exists := m.tables[m.input.Value()]; exists {
 					m.cursor = m.input.Value()
 				}
