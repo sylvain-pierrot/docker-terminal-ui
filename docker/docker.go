@@ -17,6 +17,8 @@ var (
 	cli *client.Client
 	orange = lipgloss.Color("#ffa500") // orange
 	black = lipgloss.Color("#000000") // black
+	blue = lipgloss.Color("#1e90ff") // blue
+	white = lipgloss.Color("#D9DCCF") // white
 )
 
 
@@ -140,36 +142,25 @@ func Lists() string {
 		panic(err)
 	}
 
-	cmdColor := lipgloss.Color("#1e90ff")
-	descColor := lipgloss.Color("#D9DCCF")
-	infoColor := lipgloss.Color("#ffa500")
-
 	listInfo := lipgloss.NewStyle().
-		Foreground(infoColor).
-		// MarginRight(1).
-		// MarginLeft(12).
+		Foreground(orange).
 		Height(10).
 		Width(20).
 		Bold(true)
 
 	listCmd := lipgloss.NewStyle().
-		Foreground(cmdColor).
-		// MarginRight(1).	
+		Foreground(blue).
 		MarginLeft(8).
 		Height(10).
 		Width(10).
 		Bold(true)
 	
 	listDesc := lipgloss.NewStyle().
-		Foreground(descColor).
-		// MarginRight(12).
-		// MarginLeft(12).
+		Foreground(white).
 		Height(10).
 		Width(20).
 		Bold(true)
-
-		
-		// 383838
+	
 	listItem := lipgloss.NewStyle().PaddingLeft(2).Render
 
 	lists2 := lipgloss.JoinHorizontal(lipgloss.Right,
@@ -224,23 +215,15 @@ func Lists() string {
 		),
 	)
 
-	// doc := strings.Builder{}
-	// doc.WriteString(lists1 + "\n\n")
-	// doc.WriteString(lists2)
-
-	docStyle := lipgloss.NewStyle().Padding(1, 0, 0, 0)
+	docStyle := lipgloss.NewStyle().PaddingTop(1)
 
 	return docStyle.Render(lipgloss.JoinHorizontal(lipgloss.Left, lists1, lists2)) 
-	// return docStyle.Render(doc.String())
-	// return doc.String()
 }
 
 
 func LogoDO3() string {
-	logoColor := lipgloss.Color("#ffa500") // orange
-
 	logoFieldStyle := lipgloss.NewStyle().
-		Foreground(logoColor).
+		Foreground(orange).
 		PaddingTop(1).
 		Height(10).
 		Width(40).
