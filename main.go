@@ -75,6 +75,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				for _, item := range searchItems {
 					if strings.HasPrefix(item, m.input.Value()) {
 						m.input.SetValue(item)
+						m.input.CursorEnd()
+						m.cursor = m.input.Value()
 						break
 					}
 				}
@@ -152,12 +154,13 @@ func (m model) View() string {
 	input_string := inputStyle.Render(m.input.View())
 	table_string := tableStyle.Render(table.View())
 	desc_string := docker.Lists()
+	//desc_logo := docker.ListsTest()
 
 	var result string
 	if (m.search) {
 		result = lipgloss.JoinVertical(lipgloss.Left, desc_string, input_string, table_string)
 	} else {
-		result = lipgloss.JoinVertical(lipgloss.Left, desc_string, table_string)
+		result = lipgloss.JoinVertical(lipgloss.Left, desc_string,  table_string)
 	}
 
 	return lipgloss.PlaceVertical(height, lipgloss.Top, result)
