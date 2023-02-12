@@ -13,7 +13,12 @@ import (
 	"github.com/docker/docker/client"
 )
 
-var cli *client.Client
+var (
+	cli *client.Client
+	orange = lipgloss.Color("#ffa500") // orange
+	black = lipgloss.Color("#000000") // black
+)
+
 
 func Init(client *client.Client) {
 	cli = client
@@ -257,4 +262,18 @@ func LogoDO3() string {
 	)
 
 	return logo
+}
+
+func LabelContext(context string) string {
+	contextStyle := lipgloss.NewStyle().
+		Foreground(black).
+		Background(orange).
+		MarginTop(1).
+		MarginLeft(1).
+		Height(1).
+		Width(len(context)+4).
+		Bold(true).
+		Align(lipgloss.Center)
+
+	return contextStyle.Render("<"+context+">")
 }

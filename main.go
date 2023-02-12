@@ -120,14 +120,15 @@ func (m model) View() string {
 
 	height, width := utils.GetWindowSize()
 
+	contextHeight := 1
 	descHeight := 16
 	inputHeight := 1
 	var tableHeight int
 
 	if (m.search) {
-		tableHeight = height - inputHeight - descHeight - 4
+		tableHeight = height - inputHeight - descHeight - contextHeight - 4
 	} else {
-		tableHeight = height - descHeight - 2
+		tableHeight = height - descHeight - contextHeight - 2
 	}
 	width -= 2
 
@@ -149,20 +150,19 @@ func (m model) View() string {
 	table.SetWidth(currentWidth)
 	table.SetHeight(tableHeight)
 
-	
-
 	input_string := inputStyle.Render(m.input.View())
 	table_string := tableStyle.Render(table.View())
 	desc_string := docker.Lists()
 	logo_string := docker.LogoDO3()
 	//desc_logo := docker.ListsTest()
 	legend_string := lipgloss.JoinHorizontal(lipgloss.Left, desc_string, logo_string)
+	context_string := docker.LabelContext(m.cursor)
 
 	var result string
 	if (m.search) {
-		result = lipgloss.JoinVertical(lipgloss.Left, legend_string, input_string, table_string)
+		result = lipgloss.JoinVertical(lipgloss.Left, legend_string, input_string, table_string, context_string)
 	} else {
-		result = lipgloss.JoinVertical(lipgloss.Left, legend_string,  table_string)
+		result = lipgloss.JoinVertical(lipgloss.Left, legend_string,  table_string, context_string)
 	}
 
 	return lipgloss.PlaceVertical(height, lipgloss.Top, result)
