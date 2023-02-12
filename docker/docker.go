@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 )
 
@@ -71,6 +72,57 @@ func TableImages() table.Model {
 		repo_tag := strings.Split(image.RepoTags[0], ":")
 		image_id := strings.Split(image.ID, ":")
 		row := []string{repo_tag[0], repo_tag[1], image_id[1][:12], strconv.FormatInt(image.Size, 10)}
+		rows = append(rows, row)
+	}
+
+	return custom.CreateTable(rows, columns)
+}
+
+func TableVolumes() table.Model {
+	var rows []table.Row
+	var columns []table.Column
+
+	columns = []table.Column{
+	{Title: "DRIVER", Width: 10},
+	{Title: "NAME", Width: 20},
+	{Title: "LABEL", Width: 10},
+	{Title: "PATH", Width: 40},
+	}
+
+	// volumes
+	vol, err := cli.VolumeList(context.Background(), filters.Args{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, volume := range vol.Volumes {
+		vol_lab := strings.Split(volume.Labels["Labels"], ":")[0]
+		row := []string{volume.Driver, volume.Name, vol_lab, volume.Mountpoint}
+		rows = append(rows, row)
+	}
+
+	return custom.CreateTable(rows, columns)
+}
+
+func TableNetworks() table.Model {
+	var rows []table.Row
+	var columns []table.Column
+
+	columns = []table.Column{
+	{Title: "NETWORK ID", Width: 20},
+	{Title: "NAME", Width: 20},
+	{Title: "DRIVER", Width: 10},
+	{Title: "SCOPE", Width: 10},
+	}
+
+	// networks
+	networks, err := cli.NetworkList(context.Background(), types.NetworkListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, network := range networks {
+		row := []string{network.ID[:12], network.Name, network.Driver, network.Scope}
 		rows = append(rows, row)
 	}
 
