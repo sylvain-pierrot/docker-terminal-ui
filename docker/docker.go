@@ -232,7 +232,7 @@ func LogoDO3() string {
 	listItem := lipgloss.NewStyle().PaddingLeft(2).Render
 
 	logo := logoFieldStyle.Render(
-		lipgloss.JoinVertical(lipgloss.Left,
+		lipgloss.JoinVertical(lipgloss.Right,
 			listItem(" /$$$$$$$   /$$$$$$         /$$$$$$"),
 			listItem("| $$__  $$ /$$__  $$       /$$__  $$"),
 			listItem("| $$  \\ $$| $$  \\ $$      |__/  \\ $$"),

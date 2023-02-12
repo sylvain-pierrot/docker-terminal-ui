@@ -18,7 +18,6 @@ import (
 type model struct {
 	cursor string
 	input textinput.Model
-	// tables []table.Model
     tables map[string]table.Model
 	search bool
 	err error
@@ -28,9 +27,7 @@ func initialModel() model {
 	return model{
 		cursor: "container",
 		input: custom.SearchBar(),
-		// tables:  []table.Model{docker.TableContainers(), docker.TableImages()},
 		tables: map[string]table.Model{"container": docker.TableContainers(), "image": docker.TableImages(), "volume": docker.TableVolumes(), "network": docker.TableNetworks()},
-		// selected: make(map[int]struct{}),
 		search: false,
 		err: nil,
 	}
@@ -126,9 +123,9 @@ func (m model) View() string {
 	var tableHeight int
 
 	if (m.search) {
-		tableHeight = height - inputHeight - descHeight - contextHeight - 4
+		tableHeight = height - inputHeight - descHeight - contextHeight - 2
 	} else {
-		tableHeight = height - descHeight - contextHeight - 2
+		tableHeight = height - descHeight - contextHeight
 	}
 	width -= 2
 
