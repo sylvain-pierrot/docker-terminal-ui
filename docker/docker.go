@@ -142,6 +142,7 @@ func Lists() string {
 	listInfo := lipgloss.NewStyle().
 		Foreground(infoColor).
 		// MarginRight(1).
+		// MarginLeft(12).
 		Height(10).
 		Width(20).
 		Bold(true)
@@ -149,13 +150,15 @@ func Lists() string {
 	listCmd := lipgloss.NewStyle().
 		Foreground(cmdColor).
 		// MarginRight(1).	
+		MarginLeft(8).
 		Height(10).
 		Width(10).
 		Bold(true)
 	
 	listDesc := lipgloss.NewStyle().
 		Foreground(descColor).
-		MarginRight(12).
+		// MarginRight(12).
+		// MarginLeft(12).
 		Height(10).
 		Width(20).
 		Bold(true)
@@ -228,53 +231,30 @@ func Lists() string {
 }
 
 
-func ListsTest() string {
-	_, err := cli.Info(context.Background())
-	if err != nil {
-		panic(err)
-	}
-
-	blancColor := lipgloss.Color("#D9DCCF") // blanc
+func LogoDO3() string {
+	logoColor := lipgloss.Color("#ffa500") // orange
 
 	logoFieldStyle := lipgloss.NewStyle().
-		Foreground(blancColor).
-		// MarginRight(1).
-		Height(1).
-		Width(1).
+		Foreground(logoColor).
+		PaddingTop(1).
+		Height(10).
+		Width(40).
 		Bold(true)
-
-
 		
-		// 383838
 	listItem := lipgloss.NewStyle().PaddingLeft(2).Render
 
-	logo := lipgloss.JoinHorizontal(lipgloss.Right,
-		logoFieldStyle.Render(
-			lipgloss.JoinVertical(lipgloss.Right,
-				listItem(" /$$$$$$$   /$$$$$$         /$$$$$$"),
-				listItem("| $$__  $$ /$$__  $$       /$$__  $$"),
-				listItem("| $$  \\ $$| $$  \\ $$      |__/  \\ $$"),
-				listItem("| $$  | $$| $$  | $$         /$$$$$/"),
-				listItem("| $$  | $$| $$  | $$        |___  $$"),
-				listItem("| $$  | $$| $$  | $$       /$$  \\ $$"),
-				listItem("| $$$$$$$/|  $$$$$$/      |  $$$$$$/"),
-				listItem("|_______/  \\______/        \\______/ "),
-
-
-
-
-			),
+	logo := logoFieldStyle.Render(
+		lipgloss.JoinVertical(lipgloss.Left,
+			listItem(" /$$$$$$$   /$$$$$$         /$$$$$$"),
+			listItem("| $$__  $$ /$$__  $$       /$$__  $$"),
+			listItem("| $$  \\ $$| $$  \\ $$      |__/  \\ $$"),
+			listItem("| $$  | $$| $$  | $$         /$$$$$/"),
+			listItem("| $$  | $$| $$  | $$        |___  $$"),
+			listItem("| $$  | $$| $$  | $$       /$$  \\ $$"),
+			listItem("| $$$$$$$/|  $$$$$$/      |  $$$$$$/"),
+			listItem("|_______/  \\______/        \\______/ "),
 		),
-		
 	)
 
-	// doc := strings.Builder{}
-	// doc.WriteString(lists1 + "\n\n")
-	// doc.WriteString(lists2)
-
-	docStyle := lipgloss.NewStyle().Padding(0, 0, 0, 1)
-
-	return docStyle.Render(lipgloss.JoinHorizontal(lipgloss.Right, logo,)) 
-	// return docStyle.Render(doc.String())
-	// return doc.String()
+	return logo
 }

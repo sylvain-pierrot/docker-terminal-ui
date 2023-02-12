@@ -10,7 +10,7 @@ func CreateTable(rows []table.Row, columns []table.Column) table.Model {
 	for i := 0; i < len(columns); i++ {
 		width += columns[i].Width
 	}
-	
+
 	t := table.New(
 		table.WithRows(rows),
 		table.WithColumns(columns),
@@ -21,7 +21,8 @@ func CreateTable(rows []table.Row, columns []table.Column) table.Model {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		Foreground(lipgloss.Color("#FFFFFF")).
-		Bold(false)
+		Bold(false).
+		BorderForeground(lipgloss.Color("#87cefa"))
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000000")).
 		Background(lipgloss.Color("#87cefa")).
