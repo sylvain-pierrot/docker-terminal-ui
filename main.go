@@ -29,7 +29,7 @@ func initialModel() model {
 		cursor: "container",
 		input: custom.SearchBar(),
 		// tables:  []table.Model{docker.TableContainers(), docker.TableImages()},
-		tables: map[string]table.Model{"container": docker.TableContainers(), "image": docker.TableImages()},
+		tables: map[string]table.Model{"container": docker.TableContainers(), "image": docker.TableImages(), "volume": docker.TableVolumes(), "network": docker.TableNetworks()},
 		// selected: make(map[int]struct{}),
 		search: false,
 		err: nil,
@@ -43,13 +43,13 @@ func (m model) Init() tea.Cmd {
 
 // Update
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	searchItems := []string{"containers", "images", "volumes"}
+	searchItems := []string{"container", "image", "volume", "network"}
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 
 		if m.search {
-				
+			// marche pas de fou ça 
 			for _, item := range searchItems {
 				if strings.HasPrefix(item, m.input.Value()) {
 					m.input.Placeholder = item
@@ -57,6 +57,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			switch msg.String() {
+
 			case "ctrl+c":
 				return m, tea.Quit
 			case "esc":
@@ -70,6 +71,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if _, exists := m.tables[m.input.Value()]; exists {
 					m.cursor = m.input.Value()
 				}
+			case "tab":
+				for _, item := range searchItems {
+					if strings.HasPrefix(item, m.input.Value()) {
+						m.input.SetValue(item)
+						break
+					}
+				}
+
 			default:
 				m.input, cmd = m.input.Update(msg)
 			}
