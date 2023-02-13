@@ -168,7 +168,7 @@ func Lists() string {
 	lists2 := lipgloss.JoinHorizontal(lipgloss.Right,
 		listCmd.Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				// listItem("<ctrl-d>"),
+				listItem("<:cmd>"),
 				listItem("<i>"),
 				// listItem("<e>"),
 				// listItem("<?>"),
@@ -178,7 +178,7 @@ func Lists() string {
 		),
 		listDesc.Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				// listItem("Delete"),	
+				listItem("Command mode"),	
 				listItem("Inspect"),
 				// listItem("Edit"),
 				// listItem("Help"),
