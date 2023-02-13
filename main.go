@@ -38,6 +38,12 @@ func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.EnterAltScreen)
 }
 
+func resetAndSetValue(m *model, value string) {
+	m.input.Reset()
+	m.input.SetValue(value)
+	m.input.CursorStart()
+}
+
 // Update
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	searchItems := []string{"container", "image", "volume", "network"}
@@ -54,6 +60,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			switch msg.String() {
+			
+			case "v":
+				resetAndSetValue(&m, "volume")
+			case "i":
+				resetAndSetValue(&m, "image")
+			case "c":
+				resetAndSetValue(&m, "container")
+			case "n":
+				resetAndSetValue(&m, "network")
 
 			case "ctrl+c":
 				return m, tea.Quit
@@ -73,13 +88,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if strings.HasPrefix(item, m.input.Value()) {
 						m.input.SetValue(item)
 						m.input.CursorEnd()
-						m.cursor = m.input.Value()
+						//m.cursor = m.input.Value()
 						break
 					}
 				}
 
 			default:
 				m.input, cmd = m.input.Update(msg)
+				resetAndSetValue(&m, "container")
 			}
 		} else {
 			switch msg.String() {
