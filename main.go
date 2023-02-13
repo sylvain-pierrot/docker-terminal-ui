@@ -19,6 +19,8 @@ type model struct {
 	cursor string
 	input textinput.Model
     tables map[string]table.Model
+	tableAction table.Model
+	action bool
 	search bool
 	err error
 }
@@ -28,6 +30,8 @@ func initialModel() model {
 		cursor: "container",
 		input: custom.SearchBar(),
 		tables: map[string]table.Model{"container": docker.TableContainers(), "image": docker.TableImages(), "volume": docker.TableVolumes(), "network": docker.TableNetworks()},
+		tableAction: table.Model{},
+		action: false,
 		search: false,
 		err: nil,
 	}
@@ -84,22 +88,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.input.SetCursor(pos)
 				}
 			}
+		} else if m.action {
+			switch msg.String() {
+			case "ctrl+c":
+				return m, tea.Quit
+			case "esc":
+				m.tableAction = table.Model{}
+				m.action = false
+				m.tableAction.Blur()
+			}
 		} else {
 			switch msg.String() {
 			case "ctrl+c":
 				return m, tea.Quit
-			case "ctrl+a":
-				m.cursor = "container"
-			case "ctrl+e":
-				m.cursor = "image"
+			case "i":
+				row := m.tables[m.cursor].SelectedRow()
+				containerID := row[0]
+				m.tableAction = docker.TableContainerInspect(containerID)
+				m.action = true
+				m.tableAction.Focus()
 			case ":":
 				m.search = true
-				// m.tables[m.cursor].Blur()
 				m.input.Focus()
-				// switch msg.Type {
-				// case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
-				// 	return m, tea.Quit
-				// }		
 			case "enter":
 				return m, tea.Batch(
 					tea.Printf("Let's go to !"),
@@ -115,9 +125,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // view
 func (m model) View() string {
-	// legend := "<ctrl-a> Containers\n<ctrl-e> Images\n"
-	// lipgloss.lipgloss.NewStyle()
-
+	// width & height
 	height, width := utils.GetWindowSize()
 
 	contextHeight := 1
@@ -136,7 +144,6 @@ func (m model) View() string {
 		tableHeight = 0
 	}
 	
-
 	table := m.tables[m.cursor]
 	currentWidth := table.Width() + 18
 
@@ -154,14 +161,18 @@ func (m model) View() string {
 	table_string := tableStyle.Render(table.View())
 	desc_string := docker.Lists()
 	logo_string := docker.LogoDO3()
-	//desc_logo := docker.ListsTest()
 	legend_string := lipgloss.JoinHorizontal(lipgloss.Left, desc_string, logo_string)
 	context_string := docker.LabelContext(m.cursor)
 
 	var result string
 	if (m.search) {
 		result = lipgloss.JoinVertical(lipgloss.Left, legend_string, input_string, table_string, context_string)
-	} else {
+	} else if m.action {
+		m.tableAction.SetWidth(currentWidth)
+		m.tableAction.SetHeight(tableHeight)
+		tableAction_string := tableStyle.Render(m.tableAction.View())
+		result = lipgloss.JoinVertical(lipgloss.Left, legend_string,  tableAction_string, context_string)
+	} else {		
 		result = lipgloss.JoinVertical(lipgloss.Left, legend_string,  table_string, context_string)
 	}
 

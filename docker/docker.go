@@ -2,6 +2,8 @@ package docker
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"main/custom"
 	"strconv"
 	"strings"
@@ -52,7 +54,7 @@ func TableContainers() table.Model {
 		} else {
 			port = "-"
 		}
-		row := []string{container.ID[:12], container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")}
+		row := []string{container.ID, container.Image, container.Command, string(rune(container.Created)), container.Status, port, strings.Trim(container.Names[0], "/")}
 		rows = append(rows, row)	
 	}
 
@@ -166,22 +168,22 @@ func Lists() string {
 	lists2 := lipgloss.JoinHorizontal(lipgloss.Right,
 		listCmd.Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				listItem("<ctrl-d>"),
-				listItem("<d>"),
-				listItem("<e>"),
-				listItem("<?>"),
-				listItem("<u>"),
-				listItem("<y>"),
+				// listItem("<ctrl-d>"),
+				listItem("<i>"),
+				// listItem("<e>"),
+				// listItem("<?>"),
+				// listItem("<u>"),
+				// listItem("<y>"),
 			),
 		),
 		listDesc.Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				listItem("Delete"),	
-				listItem("Describe"),
-				listItem("Edit"),
-				listItem("Help"),
-				listItem("Use"),
-				listItem("YAML"),
+				// listItem("Delete"),	
+				listItem("Inspect"),
+				// listItem("Edit"),
+				// listItem("Help"),
+				// listItem("Use"),
+				// listItem("YAML"),
 			),
 		),
 	)
@@ -259,4 +261,37 @@ func LabelContext(context string) string {
 		Align(lipgloss.Center)
 
 	return contextStyle.Render("<"+context+">")
+}
+
+func TableContainerInspect(containerID string) table.Model {
+	inspect := containerExecInspect(containerID)
+
+	var rows []table.Row
+	var columns []table.Column
+	// maxWidth := 0
+	// inspect
+	for _, line := range strings.Split(inspect, "\n") {
+		// if len(line) > maxWidth {
+		// 	maxWidth = len(line)
+		// }
+		rows = append(rows, []string{line})
+	}
+
+	columns = []table.Column{
+		{Title: "JSON", Width: 80},
+		}
+
+	return custom.CreateTable(rows, columns)
+}
+
+func containerExecInspect(containerID string) string {
+	inspect, err := cli.ContainerInspect(context.Background(), containerID)
+	if err != nil {
+		panic(err)
+	}
+	b, err := json.MarshalIndent(inspect, "", "    ")
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	return string(b)
 }
