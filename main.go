@@ -78,7 +78,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 
-				if len(completions) > 0 {
+				if len(completions) > 0 && len(m.input.Value()) > 0 {
 					m.input.Reset()
 					m.input.SetValue(completions[0])
 					m.input.SetCursor(pos)
