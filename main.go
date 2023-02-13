@@ -38,37 +38,15 @@ func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.EnterAltScreen)
 }
 
-func resetAndSetValue(m *model, value string) {
-	m.input.Reset()
-	m.input.SetValue(value)
-	m.input.CursorStart()
-}
-
 // Update
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	searchItems := []string{"container", "image", "volume", "network"}
+	options := []string{"container", "image", "volume", "network"}
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 
 		if m.search {
-			// marche pas de fou ça 
-			for _, item := range searchItems {
-				if strings.HasPrefix(item, m.input.Value()) {
-					m.input.Placeholder = item
-					break
-				}
-			}
 			switch msg.String() {
-			
-			case "v":
-				resetAndSetValue(&m, "volume")
-			case "i":
-				resetAndSetValue(&m, "image")
-			case "c":
-				resetAndSetValue(&m, "container")
-			case "n":
-				resetAndSetValue(&m, "network")
 
 			case "ctrl+c":
 				return m, tea.Quit
@@ -79,23 +57,32 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// m.tables[m.cursor].Focus()
 				// table.Focus()
 			case "enter":
-
 				if _, exists := m.tables[m.input.Value()]; exists {
 					m.cursor = m.input.Value()
 				}
 			case "tab":
-				for _, item := range searchItems {
-					if strings.HasPrefix(item, m.input.Value()) {
-						m.input.SetValue(item)
-						m.input.CursorEnd()
-						//m.cursor = m.input.Value()
-						break
+				m.input.CursorEnd()
+			default:
+				m.input, cmd = m.input.Update(msg)
+
+				pos := m.input.Position()
+				val := m.input.Value()[:pos]
+
+				m.input.SetValue(val)
+				m.input.SetCursor(len(val))
+
+				var completions []string
+				for _, option := range options {
+					if strings.HasPrefix(option, val) {
+						completions = append(completions, option)
 					}
 				}
 
-			default:
-				m.input, cmd = m.input.Update(msg)
-				resetAndSetValue(&m, "container")
+				if len(completions) > 0 {
+					m.input.Reset()
+					m.input.SetValue(completions[0])
+					m.input.SetCursor(pos)
+				}
 			}
 		} else {
 			switch msg.String() {
