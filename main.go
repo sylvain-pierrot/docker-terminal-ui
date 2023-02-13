@@ -61,8 +61,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// m.tables[m.cursor].Focus()
 				// table.Focus()
 			case "enter":
-				if _, exists := m.tables[m.input.Value()]; exists {
+				if _, exists := m.tables[m.input.Value()[:m.input.Position()]]; exists {
 					m.cursor = m.input.Value()
+					m.input.Reset()
+					m.search = false
+					m.input.Blur()
 				}
 			case "tab":
 				m.input.CursorEnd()
